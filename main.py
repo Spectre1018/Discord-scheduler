@@ -15,7 +15,7 @@ client = discord.Client()
 
 
 
-#Elements
+
 global check_flag
 check_flag = False
 global first_take
@@ -24,8 +24,6 @@ first_take = False
 database = []
 
 
-
-#ここを実行しながら４３行目以降も実行したい。というかここはcheck_flagがTrueの間はずっと動作させたい。
 async def tick():
     check = 0
     chk = 0
