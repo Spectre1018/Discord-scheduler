@@ -25,6 +25,7 @@ database = []
 
 
 
+#ここを実行しながら４３行目以降も実行したい。というかここはcheck_flagがTrueの間はずっと動作させたい。
 async def tick():
     check = 0
     chk = 0
@@ -58,7 +59,7 @@ async def scheduler(interval=58):
 async def on_ready():
     print(f'Logged in as: {client.user.name}')
     print(f'With ID: {client.user.id}')
-    await client.change_presence(activity=discord.Game(name="/helpでHELPメッセージを表示",type=1))
+    await client.change_presence(activity=discord.Game(name="!helpでHELPメッセージを表示",type=1))
     await client.wait_until_ready()
     channel = client.get_channel(int(startChannel))
     await channel.send("```ログインしました。```")
@@ -101,21 +102,25 @@ async def on_message(message):
                 await scheduler()
                 first_take = True
         else:
-            await message.channel.send("再度入力してください。")
-    
+            await message.channel.send("再度入力してください。")    
 
     if message.content.startswith("!list"):
         cnt = 0
         await message.channel.send("予定の一覧を表示するよ!")
         while len(database) > cnt:
-            await message.channel.send(database[cnt])
+            list_mes = discord.Embed(title=database[cnt][0]+" : "+database[cnt][1],description= database[cnt][2],color = discord.Colour.from_rgb(65,105,225))
+            await channel.send(embed = list_mes)
             cnt = cnt + 1
 
     if message.content.startswith("!del"):
+        cntt= 0
         def check_1(msg):
             return msg.author == message.author
         await message.channel.send("予定の削除を実行します！\n上から何番目かを入力してください。")
-        await message.channel.send(database)
+        while len(database) > cntt:
+            del_mes = discord.Embed(title=database[cntt][0]+" : "+database[cntt][1],description= database[cntt][2],color = discord.Colour.from_rgb(65,105,225))
+            await channel.send(embed = del_mes)
+            cntt = cntt + 1
         del_msg = await client.wait_for("message", check=check_1)
         del_msg = int(del_msg.content)
         del_msg = del_msg - 1 
@@ -126,9 +131,41 @@ async def on_message(message):
             await message.channel.send("予定を削除しました。")
             del database[del_msg]
         else:
-            await message.channel.send("もう一度最初からやり直してください。")
-        
+            await message.channel.send("もう一度最初からやり直してください。")        
 
+
+    if message.content.startswith("!edit"):
+        cnntt= 0
+        def check_2(msg):
+            return msg.author == message.author
+        await message.channel.send("予定の変更を実行します！\n上から何番目かを入力してください。")
+        while len(database) > cnntt:
+            edit_mes = discord.Embed(title=database[cnntt][0]+" : "+database[cnntt][1],description= database[cnntt][2],color = discord.Colour.from_rgb(47,32,66))
+            await channel.send(embed = edit_mes)
+            cnntt = cnntt + 1
+        edit_msg = await client.wait_for("message", check=check_2)
+        edit_msg = int(edit_msg.content)
+        edit_msg = edit_msg - 1 
+        await message.channel.send("以下の予定を変更します。よろしいですか？['y''Y' / 'n''N']")
+        await message.channel.send(database[edit_msg])
+        yn = await client.wait_for("message",check=check_2)
+        if yn.content == "y" or "Y":
+            del database[edit_msg]
+            await message.channel.send("予定を再度入力してください。")
+            await message.channel.send("予定の名称を再設定します。入力してください。")
+            title = await client.wait_for("message",check=check_2)
+            await message.channel.send("予定の時刻を再設定します。入力してください。")
+            time = await client.wait_for("message",check=check_2)
+            await message.channel.send("予定のコメントを再設定します。入力してください。")
+            comm = await client.wait_for("message",check=check_2)
+            e = (title.content,time.content,comm.content)
+            database.append(e)
+            last = len(database)
+            last = last -1 
+            await message.channel.send("予定を再設定しました。確認してください。↓")
+            await message.channel.send(database[last])
+        else:
+            await message.channel.send("もう一度最初からやり直してください。")      
 
 
 
@@ -136,7 +173,8 @@ async def on_message(message):
         help_mes = discord.Embed(title="コマンド一覧を表示します。",color=discord.Colour.from_rgb(166,242,0))
         help_mes.add_field(name="!set",value="新規の予定を設定します。\nBotの指示に従って入力してください。\nコメントは一行でお願いします。",inline=False)
         help_mes.add_field(name="!del",value="登録されている予定の削除を行います。",inline=False)
-        help_mes.add_field(name="!list",value="登録されているリストの一覧を表示します。",inline=False)
+        help_mes.add_field(name="!edit",value="登録されている予定の再登録を行います。",inline=False)
+        help_mes.add_field(name="!list",value="登録されている予定の一覧を表示します。",inline=False)
         await message.channel.send(embed=help_mes)
 
 
