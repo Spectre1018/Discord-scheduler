@@ -15,7 +15,7 @@ client = discord.Client()
 
 
 
-
+#Elements
 global check_flag
 check_flag = False
 global first_take
@@ -24,6 +24,8 @@ first_take = False
 database = []
 
 
+
+#ここを実行しながら４３行目以降も実行したい。というかここはcheck_flagがTrueの間はずっと動作させたい。
 async def tick():
     check = 0
     chk = 0
@@ -88,7 +90,8 @@ async def on_message(message):
         save = ""
         await message.channel.send("この予定で保存しますか？['y''Y' / 'n''N']")
         save = await client.wait_for("message",check=check)
-        if save.content == "Y" or "y":
+        grudge = save.content
+        if 'y' in grudge or 'Y' in grudge:
             d = (inname.content,indate.content,incomment.content)
             database.append(d)
             num = len(database)
@@ -99,8 +102,9 @@ async def on_message(message):
             if first_take == False:
                 await scheduler()
                 first_take = True
-        else:
-            await message.channel.send("再度入力してください。")    
+        elif 'y' not in grudge or 'Y' not in grudge:
+            await message.channel.send("再度入力してください。")
+
 
     if message.content.startswith("!list"):
         cnt = 0
@@ -125,10 +129,11 @@ async def on_message(message):
         await message.channel.send("以下の予定を削除します。よろしいですか？['y''Y' / 'n''N']")
         await message.channel.send(database[del_msg])
         yn = await client.wait_for("message",check=check_1)
-        if yn.content == "y" or "Y":
+        yn_c = yn.content
+        if "y" in yn_c or "Y" in yn_c:
             await message.channel.send("予定を削除しました。")
             del database[del_msg]
-        else:
+        elif 'y' not in yn_c or 'Y' not in yn_c:
             await message.channel.send("もう一度最初からやり直してください。")        
 
 
@@ -146,8 +151,9 @@ async def on_message(message):
         edit_msg = edit_msg - 1 
         await message.channel.send("以下の予定を変更します。よろしいですか？['y''Y' / 'n''N']")
         await message.channel.send(database[edit_msg])
-        yn = await client.wait_for("message",check=check_2)
-        if yn.content == "y" or "Y":
+        ye = await client.wait_for("message",check=check_2)
+        ye_c = ye.content
+        if "y" in ye_c or "Y" in ye_c:
             del database[edit_msg]
             await message.channel.send("予定を再度入力してください。")
             await message.channel.send("予定の名称を再設定します。入力してください。")
@@ -162,7 +168,7 @@ async def on_message(message):
             last = last -1 
             await message.channel.send("予定を再設定しました。確認してください。↓")
             await message.channel.send(database[last])
-        else:
+        elif 'y' not in ye_c or 'Y' not in ye_c:
             await message.channel.send("もう一度最初からやり直してください。")      
 
 
