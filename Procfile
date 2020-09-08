@@ -1,0 +1,1 @@
+task-bot: python main.py
