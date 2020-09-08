@@ -28,7 +28,7 @@ database = []
 async def tick():
     check = 0
     chk = 0
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     now_e = datetime.datetime.strftime(now,'%Y-%m-%d %H:%M')
     now_r  = datetime.datetime.strptime(now_e,'%Y-%m-%d %H:%M')
     while len(database) > check:
