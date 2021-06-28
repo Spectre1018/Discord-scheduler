@@ -272,7 +272,6 @@ async def on_message(message):
             await message.channel.send("もう一度最初からやり直してください。")  
 
     #幸せになれるコマンド。気分で追加した。後悔はしていない。
-    #これもオススメ:YouTube{https://www.youtube.com/watch?v=nDtj-2qnTXk}
     if message.content.startswith("!BOSS"):
         channel = message.channel
         sel = random.randint(0,10)
